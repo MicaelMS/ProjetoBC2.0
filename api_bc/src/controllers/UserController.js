@@ -25,7 +25,7 @@ const UserController = {
 
   createUser: async (req, res) => {
     const newUser = new User(req.body);
-
+    console.log('Salvando');
     try {
       const savedUser = await newUser.save();
       res.status(201).json(savedUser);

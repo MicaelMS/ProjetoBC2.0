@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
   author_user: String,
   author_pwd: String,
   author_level: String,
-  author_status: Boolean,
+  author_status: { type: Boolean, default: true },
   author_create_date: { type: Date, default: Date.now }
 });
 

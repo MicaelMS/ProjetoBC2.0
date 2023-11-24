@@ -1,32 +1,21 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-
+const articleRouter = require('../src/api/routes/articleRoutes');
+const userRouter = require('../src/api/routes/userRoutes');
+const connectDatabase = require('./database');
 const app = express();
-const port = 3000;
+const port = 4000;
+
 
 app.use(cors());
 app.use(express.json());
+app.use('/article', articleRouter);
+app.use('/user', userRouter);
 
-const connectDatabase = () =>{
-  mongoose.connect('mongodb+srv://misael:123@cluster0.oikiwov.mongodb.net/', { useNewUrlParser: true, useUnifiedTopology: true });//alterar para de acordo
-  // mongoose.connect('mongodb+srv://guilhermejosegon:12345@projetobc.qjawosc.mongodb.net/?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true });
+connectDatabase();
 
-  mongoose.connection.on('connected', () => {
-    console.log('MongoDB conectado');
-  });
-
-  const db = mongoose.connection;
-
-  db.on('error', console.error.bind(console, 'Erro de conexão ao MongoDB:'));
-  db.once('open', function () {
-    console.log('Conectado ao MongoDB Atlas');
-  });
-
-  app.listen(port, () => {
-    console.log(`Servidor rodando na porta ${port}`);
-  });
-}
-
-
+app.listen(port, () => {
+  console.log(`Servidor rodando na porta ${port}`);
+});
 

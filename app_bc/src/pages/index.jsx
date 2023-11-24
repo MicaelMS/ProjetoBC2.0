@@ -3,8 +3,8 @@ import React from "react";
 import { Col, Row } from "antd";
 import NavHome from '@/components/NavHome'
 import Head from 'next/head'
-import TabelaCurtidos from "./admin/principal/TabelaCurtidos";
-import TabelaDestaque from "./admin/principal/TabelaDestaque";
+import TabelaCurtidos from "@/components/TabelaCurtidos";
+import TabelaDestaque from "@/components/TabelaDestaque";
 
 export default function Home() {
   return (
