@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Form, Input, Select } from 'antd'
 import Axios from 'axios';
 
-export default function Detalhes({ children }) {
+export default function Detalhes({ usuario, children }) {
   const [visible, setVisible] = useState(false);
   const [form] = Form.useForm();
+
+  useEffect(() => {
+    console.log('usuario',usuario)
+    form.setFieldsValue({...usuario})
+  }, [visible]);
 
   const [user, setUser] = useState({
     // author_id: "",
@@ -17,7 +22,7 @@ export default function Detalhes({ children }) {
     // author_create_date: ""
   });
 
-  const [message, setMensage] = useState({ message: "", status: "" });
+  const [message, setMensage] = useState({ message: "", status: "" });//nao esta sendo usado
 
   const optionsLevel = [
     { value: 'admin', text: 'Administrador' },
@@ -32,7 +37,8 @@ export default function Detalhes({ children }) {
   ];
 
   const onCancel = () => {
-    form.setFieldsValue();
+    console.log('teste')
+    form.resetFields();
     setVisible(false);
   }
 
@@ -43,8 +49,16 @@ export default function Detalhes({ children }) {
   const handleCreate = async () => {
     try {
       await form.validateFields();
-      const response = await Axios.post('http://localhost:4000/user/salvar', { user });
+      const formData = form.getFieldsValue();
+
+      if (codigo) {
+        const response = await Axios.put('http://localhost:4000/user/editar', { ...formData });
+      }
+      else {
+        const response = await Axios.post('http://localhost:4000/user/salvar', { ...formData });
+      }
       setMensage({ message: response.data.message, status: "ok" });
+      onCancel();
     } catch (error) {
       console.error('Erro ao criar o Usuário:', error);
       setMensage({ message: "Erro ao criar o Usuário!", status: "error" });
@@ -83,7 +97,7 @@ export default function Detalhes({ children }) {
           <Form.Item name="author_pwd"
             label="Senha Login"
             rules={[{ required: true, message: 'Por favor, insira a senha do usuário' }]}>
-            <Input />
+            <Input.Password />
           </Form.Item>
           <Form.Item name="author_level"
             label="Nível Acesso"
