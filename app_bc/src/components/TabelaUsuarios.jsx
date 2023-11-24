@@ -1,6 +1,6 @@
 import React from "react";
-import { Button, Card, Col, Row, Table } from "antd";
-import { EditOutlined } from '@ant-design/icons';
+import { Button, Card, Col, Row, Table, Tooltip } from "antd";
+import { EditOutlined, SearchOutlined } from '@ant-design/icons';
 import Detalhes from "@/pages/admin/users/Detalhes";
 import { format } from "date-fns";
 
@@ -39,9 +39,23 @@ function TabelaUsuarios({ usuarios, onUsuariosChange }) {
       key: 'author_name',
       width: 90,
       render: (_, row) => (
-        <Detalhes usuario={row}>
-          <Button icon={<EditOutlined />} />
-        </Detalhes>
+        <Row>
+          <Col span={12}>
+            <Detalhes usuario={row}>
+              <Tooltip title='Editar'>
+                <Button icon={<EditOutlined />} />
+              </Tooltip>
+            </Detalhes>
+          </Col>
+          <Col span={12}>
+            <Detalhes usuario={row}
+              consulta={true}>
+              <Tooltip title='Consultar'>
+                <Button icon={<SearchOutlined />} />
+              </Tooltip>
+            </Detalhes>
+          </Col>
+        </Row>
       )
     }
   ];

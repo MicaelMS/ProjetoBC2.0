@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Modal, Form, Input, Select } from 'antd'
 import Axios from 'axios';
 
-export default function Detalhes({ usuario, children }) {
+export default function Detalhes({ usuario, children, consulta = false }) {
   const [visible, setVisible] = useState(false);
   const [form] = Form.useForm();
 
   useEffect(() => {
-    console.log('usuario',usuario)
-    form.setFieldsValue({...usuario})
+    console.log('usuario', usuario)
+    form.setFieldsValue({ ...usuario })
   }, [visible]);
 
   const [user, setUser] = useState({
@@ -75,7 +75,9 @@ export default function Detalhes({ usuario, children }) {
         cancelText="Cancelar"
         onCancel={onCancel}
         onOk={handleCreate}>
-        <Form form={form} layout="vertical">
+        <Form form={form}
+          layout="vertical"
+          disabled={consulta}>
           <Form.Item name="author_name"
             label="Nome"
             rules={[{ required: true, message: 'Por favor, insira o nome do usuário' }]}>
