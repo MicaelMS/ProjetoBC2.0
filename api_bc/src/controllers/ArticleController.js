@@ -3,8 +3,18 @@ const Article = require('../models/Article');
 const ArticleController = {
   getAllArticles: async (req, res) => {
     try {
-      const articles = await Article.find();
-      res.json(articles);
+      const { filtro, tipo } = req.query;
+
+      if (tipo === 'curtida') {
+        const articles = await Article.find({ chave: { $regex: filtro || '', $options: 'i' } }).sort({ curtidas: -1 }).limit(10);
+        res.json(articles);
+      } else if (tipo === 'destaque') {
+        const articles = await Article.find({ chave: { $regex: filtro || '', $options: 'i' }, destaque: true }).limit(10);
+        res.json(articles);
+      } else {
+        const articles = await Article.find({ chave: { $regex: filtro || '', $options: 'i' } });
+        res.json(articles);
+      }
     } catch (error) {
       res.status(500).json({ message: error.message });
     }

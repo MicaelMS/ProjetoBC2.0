@@ -4,7 +4,6 @@ import axios from "axios";
 import TabelaUsuarios from "@/components/TabelaUsuarios";
 import TabelaArtigos from "@/components/TabelaArtigos";
 import NavAdmin from '@/components/NavAdmin'
-import MenuUsers from '@/components/MenuUsers';
 import Head from 'next/head'
 import Link from 'next/link'
 
@@ -13,14 +12,23 @@ function Principal(props) {
   const [usuarios, setUsuarios] = useState([]);
 
   useEffect(() => {
-    // Chamada à API para obter dados
     fetchData();
+    fetchDataArtigos();
   }, []);
 
-  const fetchData = async () => {
+  const fetchData = async (filtro) => {
     try {
-      const usuario = await axios.get("http://localhost:4000/user/consultar");
-      setUsuarios(usuario.data);
+      const usuarios = await axios.get("http://localhost:4000/user/consultar", { params: { filtro } });
+      setUsuarios(usuarios.data);
+    } catch (error) {
+      console.error("Erro ao obter dados:", error.message);
+    }
+  };
+
+  const fetchDataArtigos = async (filtro) => {
+    try {
+      const artigos = await axios.get("http://localhost:4000/article/consultar", { params: { filtro } });
+      setArtigos(artigos.data);
     } catch (error) {
       console.error("Erro ao obter dados:", error.message);
     }
@@ -40,10 +48,13 @@ function Principal(props) {
         <Row gutter={[10, 10]}>
           <Col span={24}>
             <TabelaUsuarios usuarios={usuarios}
+              onFilterChange={(filtro) => fetchData(filtro)}
               onUsuariosChange={fetchData} />
           </Col>
           <Col span={24}>
-            <TabelaArtigos />
+            <TabelaArtigos artigos={artigos}
+              onFilterChange={(filtro) => fetchDataArtigos(filtro)}
+              onArtigosChange={fetchDataArtigos} />
           </Col>
         </Row>
       </Card>

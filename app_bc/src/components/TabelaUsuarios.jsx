@@ -1,11 +1,11 @@
-import React from "react";
-import { Button, Card, Col, Row, Table, Tooltip } from "antd";
+import React, { useEffect, useState } from "react";
+import { Button, Card, Col, Input, Row, Table, Tooltip } from "antd";
 import { EditOutlined, SearchOutlined } from '@ant-design/icons';
 import Detalhes from "@/pages/admin/users/Detalhes";
 import { format } from "date-fns";
 
-function TabelaUsuarios({ usuarios, onUsuariosChange }) {
-  console.log('usuarios', usuarios);
+function TabelaUsuarios({ usuarios, onFilterChange, onUsuariosChange }) {
+  const [filtro, setFiltro] = useState();
   const columns = [
     {
       title: 'Nome',
@@ -41,7 +41,8 @@ function TabelaUsuarios({ usuarios, onUsuariosChange }) {
       render: (_, row) => (
         <Row>
           <Col span={12}>
-            <Detalhes usuario={row}>
+            <Detalhes usuario={row}
+              onUsuariosChange={onUsuariosChange}>
               <Tooltip title='Editar'>
                 <Button icon={<EditOutlined />} />
               </Tooltip>
@@ -60,13 +61,27 @@ function TabelaUsuarios({ usuarios, onUsuariosChange }) {
     }
   ];
 
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      onFilterChange(filtro);
+    }, 1000);
+    return () => clearTimeout(timeoutId);
+  }, [filtro]);
+
   return (
     <Card title={'Tabela Usuários'}>
       <Row gutter={[10, 10]}
         justify={'end'}>
-        <Col>
-          <Detalhes>
-            <Button type="primary">
+        <Col span={20}>
+          <Input value={filtro}
+            onChange={({ target: { value } }) => setFiltro(value)}
+            placeholder="Pesquisar por nome..."
+            suffix={<SearchOutlined />} />
+        </Col>
+        <Col span={4}>
+          <Detalhes onUsuariosChange={onUsuariosChange}>
+            <Button type="primary"
+              block>
               Cadastrar
             </Button>
           </Detalhes>
@@ -76,7 +91,8 @@ function TabelaUsuarios({ usuarios, onUsuariosChange }) {
             columns={columns}
             dataSource={usuarios}
             bordered
-            onChange={onUsuariosChange} />
+            onChange={onUsuariosChange}
+            pagination={false} />
         </Col>
       </Row>
     </Card>

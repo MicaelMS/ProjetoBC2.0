@@ -3,7 +3,8 @@ const User = require('../models/User');
 const UserController = {
   getAllUsers: async (req, res) => {
     try {
-      const users = await User.find();
+      const { filtro } = req.query;
+      const users = filtro ? await User.find({author_name: { $regex: filtro || '', $options: 'i' }}) : await User.find().limit(10);
       res.json(users);
     } catch (error) {
       res.status(500).json({ message: error.message });
@@ -12,6 +13,7 @@ const UserController = {
 
   getUserById: async (req, res) => {
     try {
+      console.log(req)
       const user = await User.findById(req.params.id);
       if (user) {
         res.json(user);
@@ -25,7 +27,6 @@ const UserController = {
 
   createUser: async (req, res) => {
     const newUser = new User(req.body);
-    console.log('Salvando');
     try {
       const savedUser = await newUser.save();
       res.status(201).json(savedUser);

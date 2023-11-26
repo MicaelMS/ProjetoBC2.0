@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Form, Input, Select } from 'antd'
+import { Modal, Form, Input, Select, message, Row, Col } from 'antd'
 import Axios from 'axios';
 
-export default function Detalhes({ usuario, children, consulta = false }) {
+export default function Detalhes({ usuario, children, consulta = false, onUsuariosChange }) {
   const [visible, setVisible] = useState(false);
+  const [mensagem, contextHolder] = message.useMessage();
   const [form] = Form.useForm();
 
   useEffect(() => {
-    console.log('usuario', usuario)
     form.setFieldsValue({ ...usuario })
   }, [visible]);
 
@@ -22,7 +22,6 @@ export default function Detalhes({ usuario, children, consulta = false }) {
     // author_create_date: ""
   });
 
-  const [message, setMensage] = useState({ message: "", status: "" });//nao esta sendo usado
 
   const optionsLevel = [
     { value: 'admin', text: 'Administrador' },
@@ -30,14 +29,7 @@ export default function Detalhes({ usuario, children, consulta = false }) {
     { value: 'reader', text: 'Leitor' },
   ];
 
-  const optionsStatus = [
-    { value: '', text: '-- Selecione um estado --' },
-    { value: 'true', text: 'Ativo' },
-    { value: 'false', text: 'Inativo' },
-  ];
-
   const onCancel = () => {
-    console.log('teste')
     form.resetFields();
     setVisible(false);
   }
@@ -51,67 +43,90 @@ export default function Detalhes({ usuario, children, consulta = false }) {
       await form.validateFields();
       const formData = form.getFieldsValue();
 
-      if (codigo) {
-        const response = await Axios.put('http://localhost:4000/user/editar', { ...formData });
+      if (usuario) {
+        await Axios.put(`http://localhost:4000/user/editar/${usuario._id}`, { ...formData });
+        mensagem.open({
+          type: 'success',
+          content: "Usuário editado com sucesso!",
+        });
+        onUsuariosChange?.();
       }
       else {
-        const response = await Axios.post('http://localhost:4000/user/salvar', { ...formData });
+        await Axios.post('http://localhost:4000/user/salvar', { ...formData });
+        mensagem.open({
+          type: 'success',
+          content: "Usuário salvo com sucesso!",
+        });
+        onUsuariosChange?.();
       }
-      setMensage({ message: response.data.message, status: "ok" });
       onCancel();
     } catch (error) {
-      console.error('Erro ao criar o Usuário:', error);
-      setMensage({ message: "Erro ao criar o Usuário!", status: "error" });
+      mensagem.open({
+        type: 'error',
+        content: "Erro ao criar o Usuário!",
+      });
     }
   };
 
   return (
     <>
+      {contextHolder}
       {React.cloneElement(children, { onClick: handleClick })}
-      <Modal
-        open={visible}
-        title="Cadastrar Usuário"
-        okText="Cadastrar"
+      <Modal open={visible}
+        title={`${consulta ? 'Consultar' : usuario ? 'Editar' : 'Cadastrar'} Usuário`}
+        okText="Salvar"
         cancelText="Cancelar"
         onCancel={onCancel}
         onOk={handleCreate}>
         <Form form={form}
           layout="vertical"
           disabled={consulta}>
-          <Form.Item name="author_name"
-            label="Nome"
-            rules={[{ required: true, message: 'Por favor, insira o nome do usuário' }]}>
-            <Input />
-          </Form.Item>
-          <Form.Item name="author_email"
-            label="E-mail"
-            rules={[
-              { required: true, message: 'Por favor, insira o e-mail do usuário' },
-              { type: 'email', message: 'E-mail inválido' },
-            ]}>
-            <Input />
-          </Form.Item>
-          <Form.Item name="author_user"
-            label="Usuário Login"
-            rules={[{ required: true, message: 'Por favor, insira o usuário' }]}>
-            <Input />
-          </Form.Item>
-          <Form.Item name="author_pwd"
-            label="Senha Login"
-            rules={[{ required: true, message: 'Por favor, insira a senha do usuário' }]}>
-            <Input.Password />
-          </Form.Item>
-          <Form.Item name="author_level"
-            label="Nível Acesso"
-            rules={[{ required: true, message: 'Por favor, insira o nível do usuário' }]}>
-            <Select placeholder="Selecione um nível de acesso">
-              {optionsLevel.map((option) => (
-                <Select.Option key={option.value} value={option.value}>
-                  {option.text}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
+          <Row gutter={[5, 0]}>
+            <Col span={24}>
+              <Form.Item name="author_name"
+                label="Nome"
+                rules={[{ required: true, message: 'Por favor, insira o nome do usuário' }]}>
+                <Input />
+              </Form.Item>
+            </Col>
+            <Col span={24}>
+              <Form.Item name="author_email"
+                label="E-mail"
+                rules={[
+                  { required: true, message: 'Por favor, insira o e-mail do usuário' },
+                  { type: 'email', message: 'E-mail inválido' },
+                ]}>
+                <Input />
+              </Form.Item>
+            </Col>
+            <Col span={24}>
+              <Form.Item name="author_user"
+                label="Usuário Login"
+                rules={[{ required: true, message: 'Por favor, insira o usuário' }]}>
+                <Input />
+              </Form.Item>
+            </Col>
+            <Col span={24}>
+              <Form.Item name="author_pwd"
+                label="Senha Login"
+                rules={[{ required: true, message: 'Por favor, insira a senha do usuário' }]}>
+                <Input.Password />
+              </Form.Item>
+            </Col>
+            <Col span={24}>
+              <Form.Item name="author_level"
+                label="Nível Acesso"
+                rules={[{ required: true, message: 'Por favor, insira o nível do usuário' }]}>
+                <Select placeholder="Selecione um nível de acesso">
+                  {optionsLevel.map((option) => (
+                    <Select.Option key={option.value} value={option.value}>
+                      {option.text}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+          </Row>
         </Form>
       </Modal>
     </>

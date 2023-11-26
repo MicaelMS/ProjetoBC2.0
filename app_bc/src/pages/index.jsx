@@ -1,6 +1,7 @@
 // import ArticleList from '@/components/ArticlesList'
 import React from "react";
-import { Col, Row } from "antd";
+import { Card, Col, Row, Input, Button } from "antd";
+import { SearchOutlined } from '@ant-design/icons';
 import NavHome from '@/components/NavHome'
 import Head from 'next/head'
 import TabelaCurtidos from "@/components/TabelaCurtidos";
@@ -17,29 +18,22 @@ export default function Home() {
       <div>
         <NavHome />
       </div>
-
-      <div className="d-flex justify-content-center p-2">
-        <div className="container">
-          <div className="row border-bottom">
-              <h3> Lista de Artigos Destaque</h3>
-              <TabelaDestaque />
-              {/* <ArticleList></ArticleList> */}
-          </div>
-          <div className="row border-bottom">
-              <h3> Lista de Artigos mais Curtidos</h3>
-              <TabelaCurtidos/>
-              {/* <ArticleList></ArticleList> */}
-          </div>
-          <div className="row border-bottom">
-              <h3> Buscador de Artigos</h3>
-              <div className="input-group">
-                  <input type="text" className="form-control" placeholder="Palavra-chave" aria-describedby="button-busca" />
-                  <button className="btn btn-outline-secondary" type="button" id="button-busca">Buscar</button>
-              </div>
-          </div>
-        </div>
-      </div>  
-  </>
+      <Card title="Login"
+        style={{
+          width: 1250,
+          margin: 'auto',
+          marginTop: 10,
+        }}>
+        <Row gutter={[10, 10]}>
+          <Col span={24}>
+            <TabelaDestaque />
+          </Col>
+          <Col span={24}>
+            <TabelaCurtidos />
+          </Col>
+        </Row>
+      </Card>
+    </>
   )
 }
 

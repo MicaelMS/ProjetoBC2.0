@@ -1,58 +1,97 @@
 import React, { useState, useEffect } from "react";
-import { Button, Card, Table, Form, Input } from "antd"; // Certifique-se de incluir o 'Form' aqui
+import { Input, Button, Card, Table, Col, Row, Tooltip } from "antd"; // Certifique-se de incluir o 'Form' aqui
+import { SearchOutlined, EyeOutlined } from '@ant-design/icons';
+import { format } from "date-fns";
 import axios from "axios";
+import Link from "next/link";
 
 function TabelaDestaque(props) {
   const [data, setData] = useState([]);
-  const [form] = Form.useForm();
-
-  useEffect(() => {
-    // Chamada à API para obter dados
-    const fetchData = async () => {
-      try {
-        const response = await axios.get("http://localhost:3000/consultar");
-        setData(response.data);
-      } catch (error) {
-        console.error("Erro ao obter dados:", error.message);
-      }
-    };
-
-    fetchData();
-  }, []); // O segundo argumento vazio faz com que useEffect seja executado apenas uma vez, semelhante a componentDidMount
-
+  const [filtro, setFiltro] = useState();
   const columns = [
     {
-      title: "Artigo",
-      key: "artigo",
-      dataIndex: "artigo",
+      title: 'Titulo',
+      dataIndex: 'titulo',
+      key: "titulo",
+      width: 300,
     },
+    {
+      title: 'Autor',
+      dataIndex: 'autor',
+      key: 'autor'
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+      width: 90,
+    },
+    {
+      title: 'Publicação',
+      dataIndex: 'publicacao',
+      key: 'publicacao',
+      width: 90,
+      render: (publicacao) => (
+        format(new Date(publicacao), 'dd/MM/yyyy')
+      )
+    },
+    {
+      title: '',
+      align: 'center',
+      dataIndex: '',
+      key: '',
+      width: 90,
+      render: (_, row) => (
+        <Row>
+          <Col span={24}>
+            <Link href={`../Artigo?${new URLSearchParams(enviaArtigo(row)).toString()}`}
+              passHref>
+              <Tooltip title='Visualizar'>
+                <Button icon={<EyeOutlined />} />
+              </Tooltip>
+            </Link>
+          </Col>
+        </Row>
+      )
+    }
   ];
 
-  const handleCreate = async (values) => {
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const enviaArtigo = (artigo) => {
+    const queryParams = Object.entries(artigo)
+      .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+      .join('&');
+    return queryParams;
+  }
+
+  const fetchData = async () => {
     try {
-      // Chamada à API para criar um novo registro
-      await axios.post("http://localhost:3000/salvar", values);
-      // Atualiza os dados após a criação
-      fetchData();
-      // Limpa o formulário após a criação
-      form.resetFields();
+      const response = await axios.get("http://localhost:4000/article/consultar?tipo=destaque", { params: { filtro } });
+      setData(response.data);
     } catch (error) {
-      console.error("Erro ao criar registro:", error.message);
+      console.error("Erro ao obter dados:", error.message);
     }
   };
 
   return (
-    <Card>
-      <Form form={form} onFinish={handleCreate}>
-        <Form.Item label="Artigo" name="artigo">
-          <Input />
-        </Form.Item>
-        <Button type="primary" htmlType="submit">
-          Criar Novo Registro
-        </Button>
-      </Form>
-
-      <Table size="small" dataSource={data} columns={columns} bordered />
+    <Card title='Lista de Artigos Destaque'>
+      <Row gutter={[10, 10]}>
+        <Col span={24}>
+          <Input placeholder="Pesquisar por chave..."
+            suffix={<SearchOutlined />}
+            onChange={(value) => fetchData(value)} />
+        </Col>
+        <Col span={24}>
+          <Table size="small"
+            dataSource={data}
+            columns={columns} 
+            bordered
+            pagination={false} />
+        </Col>
+      </Row>
     </Card>
   );
 }
