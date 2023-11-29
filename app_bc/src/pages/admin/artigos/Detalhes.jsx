@@ -1,24 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Form, Input, Select, message, Row, Col } from 'antd';
+import { Modal, Form, Input, Select, message, Row, Col, Checkbox } from 'antd';
 import { HeartOutlined } from '@ant-design/icons';
 import Axios from 'axios';
 import TypeaheadUsuario from '@/components/TypeaheadUsuario';
 
 export default function Detalhes({ artigo, onArtigosChange, children, consulta = false }) {
   const [visible, setVisible] = useState(false);
+  const [destaque, setDestaque] = useState(false);
   const [mensagem, contextHolder] = message.useMessage();
   const [form] = Form.useForm();
-
-  const [user, setUser] = useState({
-    // author_id: "",
-    author_name: "",
-    author_email: "",
-    author_user: "",
-    author_pwd: "",
-    author_level: "",
-    author_status: "",
-    // author_create_date: ""
-  });
 
   const optionsStatus = [
     { value: 'publicado', text: 'Publicado' },
@@ -27,10 +17,10 @@ export default function Detalhes({ artigo, onArtigosChange, children, consulta =
 
   useEffect(() => {
     form.setFieldsValue({ ...artigo });
+    setDestaque(artigo?.destaque);
   }, [visible, artigo]);
 
   const onCancel = () => {
-    console.log('teste');
     form.resetFields();
     setVisible(false);
   };
@@ -43,7 +33,6 @@ export default function Detalhes({ artigo, onArtigosChange, children, consulta =
     try {
       await form.validateFields();
       const formData = form.getFieldsValue();
-      console.log(artigo._id);
       if (artigo._id) {
         await Axios.put(`http://localhost:4000/article/editar/${artigo._id}`, { ...formData });
         mensagem.open({
@@ -121,6 +110,14 @@ export default function Detalhes({ artigo, onArtigosChange, children, consulta =
                 label="Chaves"
                 rules={[{ required: true, message: 'Por favor, insira as chaves do artigo' }]}>
                 <Input />
+              </Form.Item>
+            </Col>
+            <Col span={4}>
+              <Form.Item name="destaque"
+                label='Destaque'>
+                <Checkbox checked={destaque}
+                  style={{ marginLeft: '30%' }}
+                  onChange={({ target: { checked } }) => { setDestaque(checked); form.setFieldsValue({ destaque: checked }) }} />
               </Form.Item>
             </Col>
             <Col span={4}>

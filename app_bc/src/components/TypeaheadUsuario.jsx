@@ -7,7 +7,6 @@ const TypeaheadUsuario = ({ nome, onChange }) => {
   const [value, setValue] = useState('');
 
   useEffect(() => {
-    console.log(nome);
     setValue(nome);
   }, [nome]);
 

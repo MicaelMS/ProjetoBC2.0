@@ -20,7 +20,7 @@ const articleSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    required: true
+    required: true,
   },
   chave: {
     type: String,
@@ -33,6 +33,10 @@ const articleSchema = new mongoose.Schema({
   destaque: {
     type: Boolean,
     default: false,
+  },
+  ativo: {
+    type: Boolean,
+    default: true,
   }
 });
 

@@ -10,6 +10,8 @@ router.post('/salvar', ArticleController.createArticle);
 
 router.put('/editar/:id', ArticleController.updateArticle);
 
+router.put('/curtir/:id', ArticleController.curtirArticle);
+
 router.delete('/deletar/:id', ArticleController.deleteArticle);
 
 module.exports = router;

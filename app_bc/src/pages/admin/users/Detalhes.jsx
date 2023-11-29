@@ -63,7 +63,7 @@ export default function Detalhes({ usuario, children, consulta = false, onUsuari
     } catch (error) {
       mensagem.open({
         type: 'error',
-        content: "Erro ao criar o Usuário!",
+        content: "Erro ao salvar o Usuário!",
       });
     }
   };

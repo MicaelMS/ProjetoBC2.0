@@ -5,7 +5,6 @@ import TabelaUsuarios from "@/components/TabelaUsuarios";
 import TabelaArtigos from "@/components/TabelaArtigos";
 import NavAdmin from '@/components/NavAdmin'
 import Head from 'next/head'
-import Link from 'next/link'
 
 function Principal(props) {
   const [artigos, setArtigos] = useState([]);

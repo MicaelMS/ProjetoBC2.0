@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Button, Card, Col, Input, Row, Table, Tooltip } from "antd";
-import { EditOutlined, SearchOutlined } from '@ant-design/icons';
+import { Button, Card, Col, Input, Row, Table, Tooltip, message } from "antd";
+import { EditOutlined, SearchOutlined, DeleteOutlined } from '@ant-design/icons';
 import Detalhes from "@/pages/admin/artigos/Detalhes";
 import { format } from "date-fns";
+import axios from 'axios';
 
 function TabelaArtigos({ artigos, onFilterChange, onArtigosChange }) {
   const [filtro, setFiltro] = useState();
+  const [mensagem, contextHolder] = message.useMessage();
   const columns = [
     {
       title: 'Titulo',
@@ -38,10 +40,10 @@ function TabelaArtigos({ artigos, onFilterChange, onArtigosChange }) {
       align: 'center',
       dataIndex: '',
       key: '',
-      width: 90,
+      width: 120,
       render: (_, row) => (
         <Row>
-          <Col span={12}>
+          <Col span={8}>
             <Detalhes artigo={row}
               onArtigosChange={onArtigosChange}>
               <Tooltip title='Editar'>
@@ -49,17 +51,24 @@ function TabelaArtigos({ artigos, onFilterChange, onArtigosChange }) {
               </Tooltip>
             </Detalhes>
           </Col>
-          <Col span={12}>
+          <Col span={8}>
             <Detalhes artigo={row} consulta={true}>
               <Tooltip title='Consultar'>
                 <Button icon={<SearchOutlined />} />
               </Tooltip>
             </Detalhes>
           </Col>
+          <Col span={8}>
+            <Tooltip title='Inativar'>
+              <Button icon={<DeleteOutlined />}
+                onClick={() => { inativar(row) }}
+                danger />
+            </Tooltip>
+          </Col>
         </Row>
       )
     }
-  ];  
+  ];
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -68,34 +77,53 @@ function TabelaArtigos({ artigos, onFilterChange, onArtigosChange }) {
     return () => clearTimeout(timeoutId);
   }, [filtro]);
 
+  const inativar = async (artigo) => {
+    try {
+      await axios.delete(`http://localhost:4000/article/deletar/${artigo._id}`, { ...artigo });
+      mensagem.open({
+        type: 'success',
+        content: "Artigo inativado com sucesso!",
+      });
+      onArtigosChange?.();
+    } catch (error) {
+      mensagem.open({
+        type: 'error',
+        content: error.message,
+      })
+    }
+  }
+
   return (
-    <Card title={'Tabela Artigos'}>
-      <Row gutter={[10, 10]}
-        justify={'end'}>
-        <Col span={20}>
-          <Input value={filtro}
-            placeholder="Pesquisar por chave..."
-            onChange={({ target: { value } }) => setFiltro(value)}
-            suffix={<SearchOutlined />} />
-        </Col>
-        <Col span={4}>
-          <Detalhes onArtigosChange={onArtigosChange}>
-            <Button type="primary"
-              block>
-              Cadastrar
-            </Button>
-          </Detalhes>
-        </Col>
-        <Col span={24}>
-          <Table size="small"
-            columns={columns}
-            dataSource={artigos}
-            bordered
-            onChange={onArtigosChange}
-            pagination={false} />
-        </Col>
-      </Row>
-    </Card>
+    <>
+      {contextHolder}
+      <Card title={'Tabela Artigos'}>
+        <Row gutter={[10, 10]}
+          justify={'end'}>
+          <Col span={20}>
+            <Input value={filtro}
+              placeholder="Pesquisar por chave..."
+              onChange={({ target: { value } }) => setFiltro(value)}
+              suffix={<SearchOutlined />} />
+          </Col>
+          <Col span={4}>
+            <Detalhes onArtigosChange={onArtigosChange}>
+              <Button type="primary"
+                block>
+                Cadastrar
+              </Button>
+            </Detalhes>
+          </Col>
+          <Col span={24}>
+            <Table size="small"
+              columns={columns}
+              dataSource={artigos}
+              bordered
+              onChange={onArtigosChange}
+              pagination={false} />
+          </Col>
+        </Row>
+      </Card>
+    </>
   )
 }
 
