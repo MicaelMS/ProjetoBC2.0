@@ -53,7 +53,7 @@ const ArticleController = {
     }
   },
 
-  curtirArticle: async (req, res) => {
+  curtirArticle: async (req, res, next) => {
     try {
       const article = await Article.findById(req.params.id);
 
@@ -62,6 +62,7 @@ const ArticleController = {
       const updatedArticle = await article.save();
 
       res.json(updatedArticle);
+      next();
     } catch (error) {
       res.status(400).json({ message: error.message });
     }

@@ -5,6 +5,7 @@ import { Card, Row, Col, Typography, Divider, Button, Input, message } from 'ant
 import { HeartOutlined } from '@ant-design/icons';
 import axios from "axios";
 import NavHome from '@/components/NavHome';
+import { format } from 'date-fns';
 
 const { Title, Text } = Typography;
 
@@ -20,13 +21,12 @@ const Artigo = () => {
 
   const handleCurtir = async () => {
     try {
-      await axios.put(`http://localhost:4000/article/curtir/${artigo._id}`, { ...artigo });
+      const updateArtigo = await axios.put(`http://localhost:4000/article/curtir/${artigo._id}`, { ...artigo });
       mensagem.open({
         type: 'success',
         content: "Artigo curtido com sucesso!",
       });
-      const curtida = artigo.curtidas;
-      setArtigo({...artigo, curtidas: Number(curtida) + 1})
+      setArtigo(updateArtigo.data)
     } catch (error) {
       mensagem.open({
         type: 'error',
@@ -57,7 +57,7 @@ const Artigo = () => {
             <Title level={2}>{artigo?.titulo}</Title>
           </Col>
           <Col span={24}>
-            <Text strong>Data de Publicação:</Text> {artigo?.publicacao}
+            <Text strong>Data de Publicação:</Text> {artigo?.publicacao ? format(new Date(artigo?.publicacao), 'dd/MM/yyyy') : ''}
           </Col>
           <Col span={24}>
             <Text strong>Autor:</Text> {artigo?.autor}
