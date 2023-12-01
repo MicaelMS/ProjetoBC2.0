@@ -6,13 +6,13 @@ const ArticleController = {
       const { filtro, tipo } = req.query;
 
       if (tipo === 'curtida') {
-        const articles = await Article.find({ chave: { $regex: filtro || '', $options: 'i' }, status: 'Publicado', ativo: true }).sort({ curtidas: -1 }).limit(10);
+        const articles = await Article.find({ chave: { $regex: filtro || '', $options: 'i' }, status: 'publicado', ativo: true }).sort({ curtidas: -1 }).limit(10);
         res.json(articles);
       } else if (tipo === 'destaque') {
-        const articles = await Article.find({ chave: { $regex: filtro || '', $options: 'i' }, destaque: true, status: 'Publicado', ativo: true }).limit(10);
+        const articles = await Article.find({ chave: { $regex: filtro || '', $options: 'i' }, destaque: true, status: 'publicado', ativo: true }).limit(10);
         res.json(articles);
       } else {
-        const articles = await Article.find({ chave: { $regex: filtro || '', $options: 'i' }, status: 'Publicado', ativo: true });
+        const articles = await Article.find({ chave: { $regex: filtro || '', $options: 'i' }, status: 'publicado', ativo: true });
         res.json(articles);
       }
     } catch (error) {

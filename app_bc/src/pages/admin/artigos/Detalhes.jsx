@@ -33,7 +33,7 @@ export default function Detalhes({ artigo, onArtigosChange, children, consulta =
     try {
       await form.validateFields();
       const formData = form.getFieldsValue();
-      if (artigo._id) {
+      if (artigo) {
         await Axios.put(`http://localhost:4000/article/editar/${artigo._id}`, { ...formData });
         mensagem.open({
           type: 'success',

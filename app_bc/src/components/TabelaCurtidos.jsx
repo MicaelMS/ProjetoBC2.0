@@ -61,6 +61,13 @@ function TabelaCurtidos(props) {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      fetchData()
+    }, 1000);
+    return () => clearTimeout(timeoutId);
+  }, [filtro]);
+
   const enviaArtigo = (artigo) => {
     const queryParams = Object.entries(artigo)
       .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
@@ -68,7 +75,7 @@ function TabelaCurtidos(props) {
     return queryParams;
   }
 
-  const fetchData = async (filtro) => {
+  const fetchData = async () => {
     try {
       const response = await axios.get("http://localhost:4000/article/consultar?tipo=curtida", { params: { filtro } });
       setData(response.data);
@@ -83,7 +90,7 @@ function TabelaCurtidos(props) {
         <Col span={24}>
           <Input placeholder="Pesquisar por chave..."
             suffix={<SearchOutlined />}
-            onChange={(value) => fetchData(value)} />
+            onChange={({target: {value}}) => setFiltro(value)} />
         </Col>
         <Col span={24}>
           <Table size="small"

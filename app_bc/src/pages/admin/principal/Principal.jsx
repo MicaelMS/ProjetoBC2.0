@@ -26,6 +26,7 @@ function Principal(props) {
 
   const fetchDataArtigos = async (filtro) => {
     try {
+      console.log(`teste`);
       const artigos = await axios.get("http://localhost:4000/article/consultar", { params: { filtro } });
       setArtigos(artigos.data);
     } catch (error) {

@@ -60,6 +60,13 @@ function TabelaDestaque(props) {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      fetchData()
+    }, 1000);
+    return () => clearTimeout(timeoutId);
+  }, [filtro]);
+
   const enviaArtigo = (artigo) => {
     const queryParams = Object.entries(artigo)
       .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
@@ -69,7 +76,8 @@ function TabelaDestaque(props) {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/article/consultar?tipo=destaque", { params: { filtro } });
+      console.log(filtro);
+      const response = await axios.get(`http://localhost:4000/article/consultar?tipo=destaque`, { params: { filtro } });
       setData(response.data);
     } catch (error) {
       console.error("Erro ao obter dados:", error.message);
@@ -82,12 +90,12 @@ function TabelaDestaque(props) {
         <Col span={24}>
           <Input placeholder="Pesquisar por chave..."
             suffix={<SearchOutlined />}
-            onChange={(value) => fetchData(value)} />
+            onChange={({target: {value}}) => setFiltro(value)} />
         </Col>
         <Col span={24}>
           <Table size="small"
             dataSource={data}
-            columns={columns} 
+            columns={columns}
             bordered
             pagination={false} />
         </Col>
